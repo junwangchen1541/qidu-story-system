@@ -1,0 +1,34 @@
+# dependencies
+node_modules/
+.venv/
+venv/
+__pycache__/
+
+# private/original resources
+private_assets/
+assets_original/
+extracted_text/
+extracted_assets/
+ocr_raw/
+apk/
+*.apk
+*.npk
+*.obb
+
+# private builds
+build_private/
+dist_private/
+
+# secrets and deployment
+.env
+*.pem
+*.key
+server*.md
+部署记录.md
+服务器部署记录.md
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/qidu-story-system/route.schema.json",
+  "title": "剧情路线数据",
+  "type": "object",
+  "required": ["initial", "locations", "events", "messages", "endings"],
+  "properties": {
+    "initial": {
+      "type": "object",
+      "required": ["flags", "vars"],
+      "properties": {
+        "flags": { "type": "array", "items": { "type": "string" } },
+        "vars": { "type": "object" }
+      }
+    },
+    "locations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "x", "y"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "desc": { "type": "string" },
+          "x": { "type": "number" },
+          "y": { "type": "number" }
+        }
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "location", "bg", "conditions", "lines", "choices"],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "location": { "type": "string" },
+          "label": { "type": "string" },
+          "bg": { "type": "string" },
+          "conditions": { "type": "array" },
+          "cast": { "type": "object" },
+          "lines": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["text"],
+              "properties": {
+                "speaker": { "type": "string" },
+                "text": { "type": "string" },
+                "screen": { "type": "string", "enum": ["black_title"] },
+                "effect": { "type": "string", "enum": ["shake", "white_flash"] }
+              }
+            }
+          },
+          "choices": { "type": "array" }
+        }
+      }
+    },
+    "messages": { "type": "array" },
+    "endings": { "type": "array" }
+  }
+}

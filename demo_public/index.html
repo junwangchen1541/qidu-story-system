@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>剧情系统公开占位 Demo</title>
+  <style>
+    :root {
+      --ink: #edf7ff;
+      --dim: rgba(237, 247, 255, 0.7);
+      --gold: #f3cd72;
+      --cyan: #72d8ff;
+      --panel: rgba(5, 15, 30, 0.84);
+      --line: rgba(146, 213, 255, 0.28);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      color: var(--ink);
+      font-family: "Microsoft YaHei", "Noto Sans SC", sans-serif;
+      background: #07101f;
+    }
+
+    button {
+      border: 0;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 28% 34%, rgba(114, 216, 255, 0.32), transparent 26rem),
+        radial-gradient(circle at 72% 30%, rgba(243, 205, 114, 0.24), transparent 22rem),
+        linear-gradient(135deg, #08111f, #12233f 55%, #100d18);
+    }
+
+    .topbar {
+      position: absolute;
+      z-index: 10;
+      top: 18px;
+      left: 22px;
+      right: 22px;
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .brand,
+    .tool {
+      pointer-events: auto;
+      border: 1px solid var(--line);
+      background: rgba(5, 15, 30, 0.62);
+      box-shadow: 0 18px 48px rgba(0,0,0,0.32);
+      backdrop-filter: blur(14px);
+    }
+
+    .brand {
+      padding: 12px 18px;
+      border-radius: 18px;
+      font-size: clamp(20px, 4vw, 34px);
+      font-weight: 900;
+      letter-spacing: 0.16em;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      pointer-events: auto;
+    }
+
+    .tool {
+      min-width: 76px;
+      padding: 11px 16px;
+      border-radius: 999px;
+    }
+
+    .view {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .view.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .map-title {
+      position: absolute;
+      top: 118px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      text-shadow: 0 4px 32px rgba(0,0,0,0.74);
+    }
+
+    .map-title span {
+      display: block;
+      color: var(--gold);
+      font-size: 12px;
+      letter-spacing: 0.3em;
+    }
+
+    .map-title strong {
+      display: block;
+      margin-top: 8px;
+      font-size: clamp(34px, 8vw, 80px);
+      letter-spacing: 0.22em;
+    }
+
+    .hotspot {
+      position: absolute;
+      width: 150px;
+      transform: translate(-50%, -50%);
+      padding: 13px;
+      border-radius: 18px;
+      border: 1px solid rgba(114,216,255,0.35);
+      background: linear-gradient(135deg, rgba(7, 24, 44, 0.86), rgba(15, 42, 70, 0.78));
+      box-shadow: 0 16px 42px rgba(0,0,0,0.38);
+      text-align: left;
+    }
+
+    .hotspot.available {
+      border-color: rgba(243,205,114,0.82);
+      box-shadow: 0 0 32px rgba(243,205,114,0.28), 0 16px 42px rgba(0,0,0,0.4);
+      animation: breathe 1.8s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+      50% { transform: translate(-50%, -50%) scale(1.035); }
+    }
+
+    .hotspot strong {
+      display: block;
+      font-size: 16px;
+    }
+
+    .hotspot span {
+      display: block;
+      margin-top: 5px;
+      color: var(--dim);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .scene-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to bottom, rgba(0,0,0,0.15), rgba(0,0,0,0.72)),
+        radial-gradient(circle at 50% 34%, rgba(114,216,255,0.22), transparent 18rem),
+        linear-gradient(135deg, #101a2c, #07101f);
+    }
+
+    .stage-label {
+      position: absolute;
+      top: 112px;
+      left: 30px;
+      padding: 9px 14px;
+      border-left: 3px solid var(--gold);
+      color: var(--dim);
+      background: rgba(5, 15, 30, 0.65);
+      backdrop-filter: blur(10px);
+      letter-spacing: 0.12em;
+      font-size: 13px;
+    }
+
+    .portrait {
+      position: absolute;
+      bottom: 150px;
+      width: min(34vw, 380px);
+      height: min(62vh, 560px);
+      border-radius: 46% 46% 18% 18%;
+      background:
+        radial-gradient(circle at 50% 16%, rgba(255,255,255,0.18), transparent 18%),
+        linear-gradient(180deg, rgba(114,216,255,0.52), rgba(14,42,72,0.86));
+      filter: drop-shadow(0 28px 40px rgba(0,0,0,0.72));
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .portrait.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .portrait.left { left: 10vw; }
+    .portrait.right { right: 10vw; }
+    .portrait.inactive { opacity: 0.36; filter: grayscale(0.25) drop-shadow(0 18px 28px rgba(0,0,0,0.64)); }
+
+    .dialogue {
+      position: absolute;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%);
+      width: min(1040px, calc(100vw - 32px));
+      min-height: 150px;
+      padding: 24px 28px 22px;
+      border-radius: 26px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(9, 25, 44, 0.93), rgba(4, 10, 22, 0.94));
+      box-shadow: 0 24px 80px rgba(0,0,0,0.45);
+      backdrop-filter: blur(18px);
+    }
+
+    .nameplate {
+      position: absolute;
+      top: -24px;
+      left: 28px;
+      padding: 10px 24px;
+      border-radius: 16px 16px 16px 4px;
+      background: linear-gradient(135deg, #e5ba62, #9f6e2b);
+      color: #111827;
+      font-weight: 900;
+    }
+
+    .line {
+      white-space: pre-wrap;
+      padding-right: 110px;
+      font-size: clamp(18px, 2.2vw, 25px);
+      line-height: 1.8;
+    }
+
+    .next,
+    .choice {
+      border: 1px solid rgba(243,205,114,0.55);
+      background: rgba(243,205,114,0.15);
+      color: var(--gold);
+      border-radius: 999px;
+    }
+
+    .next {
+      position: absolute;
+      right: 24px;
+      bottom: 20px;
+      padding: 11px 20px;
+    }
+
+    .choices {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .choice {
+      width: 100%;
+      padding: 13px 18px;
+      text-align: left;
+      border-radius: 18px;
+    }
+
+    .drawer {
+      position: absolute;
+      z-index: 20;
+      top: 94px;
+      right: 24px;
+      width: min(390px, calc(100vw - 48px));
+      max-height: calc(100vh - 126px);
+      overflow: auto;
+      display: none;
+      padding: 18px;
+      border-radius: 24px;
+      border: 1px solid var(--line);
+      background: rgba(5, 15, 30, 0.9);
+      backdrop-filter: blur(18px);
+    }
+
+    .drawer.show { display: block; }
+
+    .message {
+      margin: 10px 0;
+      padding: 13px;
+      border-radius: 16px;
+      border: 1px solid rgba(114,216,255,0.2);
+      background: rgba(114,216,255,0.08);
+      line-height: 1.65;
+    }
+
+    .fx {
+      position: absolute;
+      z-index: 30;
+      inset: 0;
+      display: none;
+      place-items: center;
+      padding: 8vw;
+      background: #000;
+      text-align: center;
+      white-space: pre-line;
+      line-height: 1.9;
+      font-size: clamp(20px, 5vw, 42px);
+      letter-spacing: 0.1em;
+    }
+
+    .fx.show { display: grid; }
+    .app.shake { animation: shake 0.42s steps(2, end); }
+    @keyframes shake {
+      20% { transform: translate(8px, -8px); }
+      40% { transform: translate(-8px, 5px); }
+      60% { transform: translate(6px, 7px); }
+      80% { transform: translate(-5px, -6px); }
+    }
+
+    @media (max-width: 820px) {
+      body, .app { height: 100dvh; }
+      .topbar { top: max(8px, env(safe-area-inset-top)); left: 8px; right: 8px; }
+      .brand { max-width: calc(100vw - 166px); padding: 8px 11px; font-size: clamp(17px, 5vw, 22px); }
+      .toolbar { display: grid; grid-template-columns: repeat(3, 46px); gap: 6px; }
+      .tool { min-width: 0; width: 46px; padding: 8px 0; border-radius: 14px; font-size: 12px; }
+      .map-title { top: 76px; width: 100%; }
+      .map-title span { font-size: 10px; }
+      .map-title strong { font-size: clamp(30px, 11vw, 48px); letter-spacing: 0.14em; }
+      .hotspot { width: 80px; padding: 8px; text-align: center; }
+      .hotspot strong { font-size: 12px; }
+      .hotspot span { display: none; }
+      .stage-label { top: 76px; left: 12px; font-size: 11px; }
+      .portrait { bottom: 36dvh; width: min(54vw, 260px); height: 46dvh; }
+      .portrait.left { left: -12vw; }
+      .portrait.right { right: -12vw; }
+      .dialogue {
+        left: 8px;
+        right: 8px;
+        bottom: max(8px, env(safe-area-inset-bottom));
+        transform: none;
+        width: auto;
+        max-height: 42dvh;
+        min-height: 0;
+        overflow: auto;
+        padding: 22px 14px 14px;
+        border-radius: 18px;
+      }
+      .nameplate { top: -17px; left: 14px; padding: 7px 14px; font-size: 13px; }
+      .line { padding-right: 0; font-size: clamp(15px, 4.2vw, 18px); }
+      .next { position: sticky; display: block; width: 100%; margin-top: 12px; bottom: 0; }
+      .drawer { top: 82px; left: 8px; right: 8px; width: auto; max-height: calc(100dvh - 98px); }
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="app">
+    <div class="topbar">
+      <div class="brand">占位篇章</div>
+      <div class="toolbar">
+        <button class="tool" id="mapBtn">地图</button>
+        <button class="tool" id="terminalBtn">终端</button>
+        <button class="tool" id="resetBtn">重开</button>
+      </div>
+    </div>
+
+    <section id="mapView" class="view active">
+      <div class="map-title"><span>CROSSING CITY</span><strong>交界都市</strong></div>
+      <div id="hotspots"></div>
+    </section>
+
+    <section id="sceneView" class="view">
+      <div class="scene-bg"></div>
+      <div id="stageLabel" class="stage-label"></div>
+      <div id="left" class="portrait left"></div>
+      <div id="right" class="portrait right"></div>
+      <div id="dialogue" class="dialogue"></div>
+    </section>
+
+    <aside id="drawer" class="drawer"></aside>
+    <div id="fx" class="fx"></div>
+  </div>
+
+  <script>
+    const route = {
+      initial: { flags: [], vars: {} },
+      locations: [
+        { id: "court", name: "中央庭", desc: "故事起点", x: 50, y: 44 },
+        { id: "school", name: "学园", desc: "待触发事件", x: 28, y: 66 },
+        { id: "tower", name: "终末", desc: "示例结局", x: 70, y: 30 }
+      ],
+      messages: [
+        {
+          id: "mail_1",
+          title: "新的委托",
+          from: "终端",
+          unlock: [{ type: "flag_set", flag: "court_done" }],
+          readFlag: "mail_1_read",
+          text: "这里展示私信如何触发后续事件。公开版不包含原作文本。",
+          effects: [{ type: "set_flag", flag: "mail_opened" }]
+        }
+      ],
+      events: [
+        {
+          id: "start",
+          title: "醒来",
+          location: "court",
+          label: "DAY 7 / OPENING",
+          conditions: [{ type: "flag_not_set", flag: "court_done" }],
+          cast: { left: "引导者" },
+          lines: [
+            { text: "黑屏白字演出示例。\n\n公开版只展示系统结构，不包含原作剧情。", screen: "black_title" },
+            { speaker: "引导者", text: "欢迎来到这座城市。接下来，你将通过地点选择推进事件。" },
+            { text: "旁白、角色对白、震动、白屏和分支都由同一套数据结构驱动。" }
+          ],
+          choices: [
+            { text: "继续。", effects: [{ type: "set_flag", flag: "court_done" }] }
+          ]
+        },
+        {
+          id: "school",
+          title: "区域事件",
+          location: "school",
+          label: "DAY 7 / AREA",
+          conditions: [{ type: "flag_set", flag: "mail_opened" }, { type: "flag_not_set", flag: "school_done" }],
+          cast: { right: "同伴" },
+          lines: [
+            { speaker: "同伴", text: "地图上的高亮地点代表当前可进入的事件。" },
+            { speaker: "同伴", text: "这里可以接入战斗省略、探索、私信触发或黑核回收等结构。", effect: "shake" },
+            { text: "白屏演出示例。", effect: "white_flash" }
+          ],
+          choices: [
+            { text: "完成区域事件。", effects: [{ type: "set_flag", flag: "school_done" }] }
+          ]
+        },
+        {
+          id: "ending",
+          title: "结局示例",
+          location: "tower",
+          label: "DAY 1 / ENDING",
+          conditions: [{ type: "flag_set", flag: "school_done" }, { type: "flag_not_set", flag: "ending_done" }],
+          cast: {},
+          lines: [
+            { text: "结局条件可以由 flag、变量和选择共同决定。", screen: "black_title" }
+          ],
+          choices: [
+            { text: "抵达结局。", effects: [{ type: "set_flag", flag: "ending_done" }] }
+          ]
+        }
+      ]
+    };
+
+    const state = {
+      flags: new Set(route.initial.flags),
+      event: null,
+      line: 0
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const hasFlag = (flag) => state.flags.has(flag);
+    const check = (c) => c.type === "flag_set" ? hasFlag(c.flag) : c.type === "flag_not_set" ? !hasFlag(c.flag) : true;
+    const availableEvents = (loc) => route.events.filter((event) => event.location === loc && event.conditions.every(check));
+    const availableMessages = () => route.messages.filter((message) => message.unlock.every(check));
+
+    function show(view) {
+      $("mapView").classList.toggle("active", view === "map");
+      $("sceneView").classList.toggle("active", view === "scene");
+      $("fx").classList.remove("show");
+    }
+
+    function apply(effect) {
+      if (effect.type === "set_flag") state.flags.add(effect.flag);
+    }
+
+    function startEvent(event) {
+      state.event = event;
+      state.line = 0;
+      $("stageLabel").textContent = event.label;
+      setPortraits(event.cast, null);
+      show("scene");
+      render();
+    }
+
+    function setPortraits(cast, speaker) {
+      [["left", "left"], ["right", "right"]].forEach(([id, key]) => {
+        const el = $(id);
+        const name = cast[key];
+        el.className = `portrait ${key}${name ? " show" : ""}${speaker && speaker !== name ? " inactive" : ""}`;
+      });
+    }
+
+    function nextLine() {
+      state.line += 1;
+      render();
+    }
+
+    function choose(choice) {
+      choice.effects.forEach(apply);
+      state.event = null;
+      state.line = 0;
+      show("map");
+      render();
+    }
+
+    function renderMap() {
+      $("hotspots").innerHTML = "";
+      route.locations.forEach((loc) => {
+        const events = availableEvents(loc.id);
+        const button = document.createElement("button");
+        button.className = `hotspot ${events.length ? "available" : ""}`;
+        button.style.left = `${loc.x}%`;
+        button.style.top = `${loc.y}%`;
+        button.disabled = !events.length;
+        button.innerHTML = `<strong>${loc.name}</strong><span>${loc.desc}</span>`;
+        button.addEventListener("click", () => startEvent(events[0]));
+        $("hotspots").appendChild(button);
+      });
+    }
+
+    function renderDialogue() {
+      if (!state.event) return;
+      const line = state.event.lines[state.line];
+      if (line.screen === "black_title") {
+        $("fx").textContent = line.text;
+        $("fx").classList.add("show");
+        $("dialogue").innerHTML = state.line < state.event.lines.length - 1
+          ? `<button class="next" onclick="nextLine()">继续</button>`
+          : `<div class="choices">${state.event.choices.map((choice, index) => `<button class="choice" onclick="choose(state.event.choices[${index}])">${choice.text}</button>`).join("")}</div>`;
+        return;
+      }
+      $("fx").classList.remove("show");
+      if (line.effect === "shake") {
+        $("app").classList.remove("shake");
+        void $("app").offsetWidth;
+        $("app").classList.add("shake");
+      }
+      if (line.effect === "white_flash") {
+        $("fx").textContent = "";
+        $("fx").style.background = "#fff";
+        $("fx").classList.add("show");
+        setTimeout(() => {
+          $("fx").classList.remove("show");
+          $("fx").style.background = "#000";
+        }, 160);
+      }
+      setPortraits(state.event.cast, line.speaker);
+      const name = line.speaker || "旁白";
+      const tail = state.line < state.event.lines.length - 1
+        ? `<button class="next" onclick="nextLine()">继续</button>`
+        : `<div class="choices">${state.event.choices.map((choice, index) => `<button class="choice" onclick="choose(state.event.choices[${index}])">${choice.text}</button>`).join("")}</div>`;
+      $("dialogue").innerHTML = `<div class="nameplate">${name}</div><div class="line">${line.text}</div>${tail}`;
+    }
+
+    function readMessage(id) {
+      const message = route.messages.find((item) => item.id === id);
+      if (!message || hasFlag(message.readFlag)) return;
+      state.flags.add(message.readFlag);
+      message.effects.forEach(apply);
+      render();
+    }
+
+    function renderDrawer() {
+      const messages = availableMessages();
+      $("drawer").innerHTML = `<h2>战术终端 / 私信</h2>${
+        messages.length ? messages.map((message) => `<div class="message"><strong>${message.title}${hasFlag(message.readFlag) ? "（已读）" : ""}</strong><br>来自：${message.from}<br>${message.text}${hasFlag(message.readFlag) ? "" : `<br><button class="choice" onclick="readMessage('${message.id}')">读取</button>`}</div>`).join("") : "<div class='message'>暂无新私信</div>"
+      }`;
+    }
+
+    function render() {
+      renderMap();
+      renderDialogue();
+      renderDrawer();
+    }
+
+    function reset() {
+      state.flags = new Set(route.initial.flags);
+      state.event = null;
+      state.line = 0;
+      $("drawer").classList.remove("show");
+      show("map");
+      render();
+    }
+
+    $("mapBtn").addEventListener("click", () => show("map"));
+    $("terminalBtn").addEventListener("click", () => $("drawer").classList.toggle("show"));
+    $("resetBtn").addEventListener("click", reset);
+    render();
+  </script>
+</body>
+</html>

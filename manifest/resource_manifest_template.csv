@@ -1,0 +1,4 @@
+id,type,title,private_path,public_placeholder,status,source_note,sha256,notes
+bg_awake,bg,示例背景,private_assets/cg/example.jpg,demo_public 内置渐变,private_only,仅作字段示例,,不要提交原作资源
+portrait_sample,portrait,示例角色,private_assets/portrait/example.png,demo_public 内置剪影,private_only,仅作字段示例,,不要提交原作资源
+line_sample,text,示例文本,private_assets/text/example.md,demo_public 占位文本,private_only,仅作字段示例,,不要提交完整原文
