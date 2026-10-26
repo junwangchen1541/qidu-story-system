@@ -32,3 +32,13 @@ server*.md
 Thumbs.db
 .idea/
 .vscode/
+
+# generated runtimes, local IDE configuration and test artifacts
+apps/web/content.js
+apps/wechat/shared/
+apps/wechat/data/
+**/project.private.config.json
+**/project.local.config.json
+test-results/
+playwright-report/
+.local/

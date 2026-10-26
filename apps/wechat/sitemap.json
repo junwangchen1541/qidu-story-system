@@ -1,0 +1,4 @@
+{
+  "desc": "公开占位 Demo 页面索引",
+  "rules": [{ "action": "allow", "page": "pages/index/index" }]
+}

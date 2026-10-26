@@ -1,0 +1,3 @@
+# Keep text files LF in both the Git index and working tree, regardless of the
+# developer machine's global core.autocrlf setting. Binary files remain untouched.
+* text=auto eol=lf

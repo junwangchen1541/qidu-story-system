@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>剧情系统公开 Demo</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main id="app" class="app" aria-live="polite">
+    <header class="topbar">
+      <div id="brand" class="brand">占位篇章</div>
+      <nav class="toolbar">
+        <button class="tool" id="mapBtn" data-action="map">地图</button>
+        <button class="tool" id="terminalBtn" data-action="terminal">终端</button>
+        <button class="tool" id="resetBtn" data-action="reset">重开</button>
+      </nav>
+    </header>
+    <section id="mapView" class="view map-view active">
+      <div class="map-title"><span>CROSSING CITY</span><strong>交界都市</strong></div>
+      <div id="hotspots" class="hotspots"></div>
+    </section>
+    <section id="sceneView" class="view scene-view">
+      <div id="sceneBg" class="scene-bg"></div>
+      <div id="stageLabel" class="stage-label"></div>
+      <div id="portraits"></div>
+      <div id="dialogue" class="dialogue"></div>
+    </section>
+    <aside id="drawer" class="drawer"></aside>
+    <div id="fx" class="fx"></div>
+    <div id="flash" class="flash"></div>
+    <p id="notice" class="notice" role="status"></p>
+  </main>
+  <script src="../../packages/story-core/index.js"></script>
+  <script src="../../packages/story-core/session.js"></script>
+  <script src="./content.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

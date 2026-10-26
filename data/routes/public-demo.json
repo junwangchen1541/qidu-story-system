@@ -1,0 +1,82 @@
+{
+  "meta": { "id": "public-demo", "title": "占位篇章", "revision": "1" },
+  "initial": { "flags": [], "vars": {} },
+  "locations": [
+    { "id": "court", "name": "中央庭", "desc": "故事起点", "x": 50, "y": 44 },
+    { "id": "school", "name": "学园", "desc": "待触发事件", "x": 28, "y": 66 },
+    { "id": "tower", "name": "终末", "desc": "示例结局", "x": 70, "y": 30 }
+  ],
+  "messages": [
+    {
+      "id": "mail_1",
+      "title": "新的委托",
+      "from": "终端",
+      "unlock": [{ "type": "flag_set", "flag": "court_done" }],
+      "readFlag": "mail_1_read",
+      "text": "这里展示私信如何触发后续事件。公开版不包含原作文本。",
+      "effects": [{ "type": "set_flag", "flag": "mail_opened" }]
+    }
+  ],
+  "events": [
+    {
+      "id": "start",
+      "title": "醒来",
+      "location": "court",
+      "label": "DAY 7 / OPENING",
+      "conditions": [{ "type": "flag_not_set", "flag": "court_done" }],
+      "cast": { "left": "引导者" },
+      "lines": [
+        { "text": "黑屏白字演出示例。\n\n公开版只展示系统结构，不包含原作剧情。", "screen": "black_title" },
+        { "speaker": "引导者", "text": "欢迎来到这座城市。接下来，你将通过地点选择推进事件。" },
+        { "text": "旁白、角色对白、震动、白屏和分支都由同一套数据结构驱动。" }
+      ],
+      "choices": [
+        { "text": "继续。", "effects": [{ "type": "set_flag", "flag": "court_done" }] }
+      ]
+    },
+    {
+      "id": "school",
+      "title": "区域事件",
+      "location": "school",
+      "label": "DAY 7 / AREA",
+      "conditions": [
+        { "type": "flag_set", "flag": "mail_opened" },
+        { "type": "flag_not_set", "flag": "school_done" }
+      ],
+      "cast": { "right": "同伴" },
+      "lines": [
+        { "speaker": "同伴", "text": "地图上的高亮地点代表当前可进入的事件。" },
+        { "speaker": "同伴", "text": "这里可以接入战斗省略、探索、私信触发或黑核回收等结构。", "effect": "shake" },
+        { "text": "白屏演出示例。", "effect": "white_flash" }
+      ],
+      "choices": [
+        { "text": "完成区域事件。", "effects": [{ "type": "set_flag", "flag": "school_done" }] }
+      ]
+    },
+    {
+      "id": "ending",
+      "title": "结局示例",
+      "location": "tower",
+      "label": "DAY 1 / ENDING",
+      "conditions": [
+        { "type": "flag_set", "flag": "school_done" },
+        { "type": "flag_not_set", "flag": "ending_done" }
+      ],
+      "cast": {},
+      "lines": [
+        { "text": "结局条件可以由 flag、变量和选择共同决定。", "screen": "black_title" }
+      ],
+      "choices": [
+        { "text": "抵达结局。", "effects": [{ "type": "set_flag", "flag": "ending_done" }] }
+      ]
+    }
+  ],
+  "endings": [
+    {
+      "id": "public_demo_end",
+      "title": "示例完成",
+      "conditions": [{ "type": "flag_set", "flag": "ending_done" }],
+      "text": "公开版完成了一个最小的剧情闭环。"
+    }
+  ]
+}

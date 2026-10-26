@@ -1,0 +1,57 @@
+<view class="app {{shake ? 'shake' : ''}}">
+  <view class="topbar">
+    <text class="brand">{{title}}</text>
+    <view class="toolbar">
+      <button class="tool" data-action="map" bindtap="act">地图</button>
+      <button class="tool" data-action="terminal" bindtap="act">终端</button>
+      <button class="tool" data-action="reset" bindtap="act">重开</button>
+    </view>
+  </view>
+  <view wx:if="{{notice}}" class="notice">{{notice}}</view>
+  <view wx:if="{{mode === 'map'}}" class="map-view">
+    <view class="map-title"><text class="small">CROSSING CITY</text><text class="main">交界都市</text></view>
+    <view class="map-canvas">
+      <button wx:for="{{locations}}" wx:key="id" class="hotspot {{item.available ? 'available' : ''}}" disabled="{{!item.available}}" data-action="open" data-value="{{item.eventId}}" bindtap="act">
+        <text class="name">{{item.name}}</text><text class="desc">{{item.available ? item.eventTitle : item.desc}}</text>
+      </button>
+    </view>
+  </view>
+  <view wx:else class="scene-view">
+    <image wx:if="{{bg}}" class="scene-bg" src="{{bg}}" mode="aspectFill" />
+    <text class="stage-label">{{label}}</text>
+    <view class="portrait-row">
+      <block wx:for="{{portraits}}" wx:key="side">
+        <image wx:if="{{item.src}}" class="portrait {{item.side}} {{item.inactive ? 'inactive' : ''}}" src="{{item.src}}" mode="aspectFit" />
+        <view wx:else class="portrait placeholder {{item.side}} {{item.inactive ? 'inactive' : ''}}">{{item.name}}</view>
+      </block>
+    </view>
+    <view wx:if="{{black}}" class="fx-black"><scroll-view scroll-y class="title-text"><text>{{line.text}}</text></scroll-view></view>
+    <scroll-view scroll-y class="dialogue {{black ? 'title-control' : ''}}">
+      <view class="dialogue-inner">
+        <block wx:if="{{mode === 'ending'}}">
+          <text class="nameplate">{{ending.title}}</text><text class="line">{{ending.text}}</text>
+          <button class="choice" data-action="reset" bindtap="act">重新开始</button>
+        </block>
+        <block wx:else>
+          <block wx:if="{{!black}}"><text class="nameplate">{{speaker}}</text><text class="line">{{line.text}}</text></block>
+          <button wx:if="{{hasNext}}" class="next" data-action="next" bindtap="act">继续</button>
+          <button wx:for="{{choices}}" wx:key="index" class="choice" data-action="choose" data-value="{{item.index}}" bindtap="act">{{item.text}}</button>
+        </block>
+      </view>
+    </scroll-view>
+  </view>
+  <scroll-view scroll-y wx:if="{{drawer}}" class="drawer">
+    <view class="drawer-inner">
+      <text class="nameplate">战术终端 / 私信</text>
+      <text wx:if="{{maxCores}}" class="core-count">黑核 {{coreCount}} / {{maxCores}}</text>
+      <view wx:for="{{messages}}" wx:key="id" class="message">
+        <text class="message-title">{{item.title}}{{item.read ? '（已读）' : ''}}</text>
+        <text>来自：{{item.from}}</text><text>{{item.text}}</text>
+        <text wx:if="{{item.reply}}">回复：{{item.reply}}</text>
+        <button wx:if="{{!item.read}}" class="choice" data-action="read" data-value="{{item.id}}" bindtap="act">读取</button>
+      </view>
+      <text wx:if="{{!messages.length}}" class="message">暂无新私信</text>
+    </view>
+  </scroll-view>
+  <view wx:if="{{flash}}" class="flash"></view>
+</view>

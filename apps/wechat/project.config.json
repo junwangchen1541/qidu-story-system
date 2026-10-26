@@ -1,0 +1,12 @@
+{
+  "description": "剧情系统公开 Demo 微信小程序",
+  "packOptions": { "ignore": [] },
+  "setting": { "es6": true, "enhance": true, "urlCheck": false, "minified": false },
+  "compileType": "miniprogram",
+  "libVersion": "3.8.8",
+  "appid": "touristappid",
+  "projectname": "qidu-story-system",
+  "miniprogramRoot": "./",
+  "simulatorType": "wechat",
+  "condition": {}
+}

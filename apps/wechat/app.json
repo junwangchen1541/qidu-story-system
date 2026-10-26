@@ -1,0 +1,11 @@
+{
+  "pages": ["pages/index/index"],
+  "window": {
+    "navigationBarTitleText": "剧情系统公开 Demo",
+    "navigationBarBackgroundColor": "#07101f",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#07101f"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

@@ -1,0 +1,21 @@
+{
+  "name": "qidu-story-system",
+  "private": true,
+  "version": "0.2.0",
+  "description": "跨网页与微信小程序的剧情系统研究项目",
+  "scripts": {
+    "build": "node tools/build.js",
+    "build:private": "node tools/build-private.js",
+    "test": "node --test tests/*.test.js",
+    "test:web": "playwright test",
+    "test:wechat": "node tools/verify-wechat.js",
+    "validate": "node tools/validate-public-route.js",
+    "sync:wechat": "node tools/sync-wechat.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "ajv": "8.20.0",
+    "miniprogram-automator": "0.13.0",
+    "sharp": "0.35.5"
+  }
+}

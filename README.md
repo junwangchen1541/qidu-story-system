@@ -20,7 +20,7 @@
 
 ## 在线体验
 
-公开仓库中的 `demo_public/` 使用占位文本与 CSS 背景，只用于展示系统交互方式。私人完整资料库和原作资源不会进入公开仓库。
+公开仓库中的 `apps/web/` 使用占位文本与 CSS 背景，只用于展示系统交互方式。`demo_public/` 保留为兼容入口，会跳转到网页端。私人完整资料库和原作资源不会进入公开仓库。
 
 ## 版权声明
 
@@ -32,26 +32,39 @@
 
 ## 开发方式
 
-直接打开：
+网页端建议在仓库根目录启动静态服务器：
 
 ```bash
-demo_public/index.html
+python -m http.server 8080
 ```
 
-或用任意静态服务器：
+然后打开：
 
 ```bash
-python -m http.server 8080 -d demo_public
+http://localhost:8080/apps/web/
+```
+
+微信小程序端使用微信开发者工具导入 `apps/wechat/`。小程序端和网页端读取同一份 `data/routes/public-demo.json`，共享 `packages/story-core` 的状态机。
+
+运行共享核心校验：
+
+```bash
+npm run validate
+npm run sync:wechat
 ```
 
 ## 仓库结构
 
 ```text
-demo_public/        # 占位素材版交互 demo
-docs/               # 版权边界、贡献规范、整理方法
-schema/             # 剧情数据结构
-tools/              # 本地工具说明与占位脚本
-manifest/           # 资源清单模板，不含资源本体
+apps/web/            # 网页端渲染器
+apps/wechat/         # 微信小程序端
+packages/story-core/ # 跨平台剧情状态机
+data/routes/         # 公开占位路线数据
+demo_public/         # 兼容跳转入口
+docs/                # 版权边界、贡献规范、整理方法
+schema/              # 剧情数据结构
+tools/               # 校验和同步脚本
+manifest/            # 资源清单模板，不含资源本体
 ```
 
 ## 贡献原则
