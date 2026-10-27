@@ -33,6 +33,9 @@ Thumbs.db
 .idea/
 .vscode/
 
+# local collaboration state (kept outside the public repository)
+.changping/
+
 # generated runtimes, local IDE configuration and test artifacts
 apps/web/content.js
 apps/wechat/shared/
