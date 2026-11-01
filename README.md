@@ -1,8 +1,8 @@
-# Qidu Narrative System · 七都叙事系统
+# 七都式剧情系统复现计划
 
 研究《永远的7日之都》叙事交互方式的跨平台项目，围绕地图事件、对白、选项、私信、存档和结局，维护网页与微信小程序共用的剧情模型。
 
-[![CI](https://github.com/junwangchen1541/qidu-narrative-system/actions/workflows/ci.yml/badge.svg)](https://github.com/junwangchen1541/qidu-narrative-system/actions/workflows/ci.yml) [![Release](https://img.shields.io/github/v/release/junwangchen1541/qidu-narrative-system)](https://github.com/junwangchen1541/qidu-narrative-system/releases)
+[![CI](https://github.com/junwangchen1541/qidu-story-system/actions/workflows/ci.yml/badge.svg)](https://github.com/junwangchen1541/qidu-story-system/actions/workflows/ci.yml) [![Release](https://img.shields.io/github/v/release/junwangchen1541/qidu-story-system)](https://github.com/junwangchen1541/qidu-story-system/releases)
 
 > 怎么样都好，但结局不应该是这样。
 
@@ -12,7 +12,7 @@
 
 当前版本 **0.3.0**，处于 1.0 之前的研究原型阶段。已实现共用状态机、网页与微信小程序渲染层，以及网页自动演出能力。数据格式和表现仍会迭代；微信实机验证尚未完成。
 
-版本内容见 [Releases](https://github.com/junwangchen1541/qidu-narrative-system/releases)、[变更日志](CHANGELOG.md)和 [0.3.0 发布说明](docs/releases/v0.3.0.md)。
+版本内容见 [Releases](https://github.com/junwangchen1541/qidu-story-system/releases)、[变更日志](CHANGELOG.md)和 [0.3.0 发布说明](docs/releases/v0.3.0.md)。
 
 ## 功能
 
