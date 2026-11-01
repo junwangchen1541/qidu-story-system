@@ -9,7 +9,7 @@
 <body>
   <main id="app" class="app" aria-live="polite">
     <header class="topbar">
-      <div id="brand" class="brand">占位篇章</div>
+      <div class="brand"><h1 id="brand">占位篇章</h1></div>
       <nav class="toolbar">
         <button class="tool" id="mapBtn" data-action="map">地图</button>
         <button class="tool" id="terminalBtn" data-action="terminal">终端</button>
@@ -17,17 +17,17 @@
       </nav>
     </header>
     <section id="mapView" class="view map-view active">
-      <div class="map-title"><span>CROSSING CITY</span><strong>交界都市</strong></div>
+      <div class="city-lines"></div><div class="map-title"><div class="small">CROSSING CITY</div><div class="main">交界都市</div></div>
       <div id="hotspots" class="hotspots"></div>
     </section>
     <section id="sceneView" class="view scene-view">
       <div id="sceneBg" class="scene-bg"></div>
       <div id="stageLabel" class="stage-label"></div>
-      <div id="portraits"></div>
+      <div id="portraits" class="character-layer"></div>
       <div id="dialogue" class="dialogue"></div>
     </section>
     <aside id="drawer" class="drawer"></aside>
-    <div id="fx" class="fx"></div>
+    <div id="fx" class="fx-overlay"></div>
     <div id="flash" class="flash"></div>
     <p id="notice" class="notice" role="status"></p>
   </main>

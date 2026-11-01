@@ -11,11 +11,23 @@ async function main() {
   const saveKey = 'qidu:save:v1:' + (privateMode ? 'mainline01_orthodox_sandbox' : 'public-demo');
   const previous = await mini.callWxMethod('getStorageSync', saveKey);
   try {
-    const system = await mini.systemInfo();
+    const system = await mini.callWxMethod('getAppBaseInfo');
     assert.ok(require('licia/cmpVersion')(system.SDKVersion, '2.7.3') >= 0);
     console.log('Simulator SDK:', system.SDKVersion);
     await mini.callWxMethod('removeStorageSync', saveKey);
-    let page = await mini.reLaunch('/pages/index/index');
+    // automator 0.13 asks App.getCurrentPage before every route change. IDE
+    // 2.02 can briefly report no webview during a rebuild, so route directly
+    // and wait for the page stack to register.
+    const waitPage = async () => {
+      for (let i = 0; i < 30; i++) {
+        const stack = await mini.pageStack();
+        if (stack.length) return stack[stack.length - 1];
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+      throw new Error('微信模拟器页面未注册；请先在开发者工具点击“编译”并等待模拟器出现页面。');
+    };
+    const relaunch = async () => { await mini.callWxMethod('reLaunch', { url: '/pages/index/index' }); return waitPage(); };
+    let page = await relaunch();
     await page.waitFor('.hotspot');
     const tap = async (selector) => { const el = await page.$(selector); assert.ok(el, selector); await el.tap(); };
     const open = id => tap('[data-action="open"][data-value="' + id + '"]');
@@ -28,7 +40,7 @@ async function main() {
       await mini.screenshot({ path: path.join(output, 'private-map.png') });
       await open('awake');
       await tap('[data-action="next"]');
-      page = await mini.reLaunch('/pages/index/index');
+      page = await relaunch();
       assert.equal(await page.data('lineIndex'), 1);
       for (let i = 0; await page.data('black'); i++) { assert.ok(i < 20); await tap('[data-action="next"]'); }
       await mini.screenshot({ path: path.join(output, 'private-dialogue.png') });
@@ -40,7 +52,7 @@ async function main() {
     } else {
       await open('start'); assert.equal(await page.data('black'), true);
       await tap('[data-action="next"]');
-      page = await mini.reLaunch('/pages/index/index');
+      page = await relaunch();
       assert.equal(await page.data('lineIndex'), 1);
       await finish();
       await tap('[data-action="terminal"]'); await tap('[data-action="read"]');
@@ -50,15 +62,18 @@ async function main() {
       assert.equal((await page.data('ending')).id, 'public_demo_end');
     }
     assert.equal(await page.data('mode'), 'ending');
-    page = await mini.reLaunch('/pages/index/index'); assert.equal(await page.data('mode'), 'ending');
+    page = await relaunch(); assert.equal(await page.data('mode'), 'ending');
     await mini.screenshot({ path: path.join(output, privateMode ? 'private-ending.png' : 'public-ending.png') });
     assert.deepEqual(errors, []);
     console.log('WeChat simulator passed:', privateMode ? 'private first mainline, 1-core ending' : 'public full route and private-message gate');
   } finally {
     if (previous) await mini.callWxMethod('setStorageSync', saveKey, previous);
     else await mini.callWxMethod('removeStorageSync', saveKey);
-    await mini.reLaunch('/pages/index/index');
-    await mini.disconnect();
+    try {
+      await mini.callWxMethod('reLaunch', { url: '/pages/index/index' });
+    } finally {
+      await mini.disconnect();
+    }
   }
 }
 main().catch(e => { console.error(e); process.exitCode = 1; });

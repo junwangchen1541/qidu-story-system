@@ -9,17 +9,19 @@
   </view>
   <view wx:if="{{notice}}" class="notice">{{notice}}</view>
   <view wx:if="{{mode === 'map'}}" class="map-view">
+    <image wx:if="{{mapBg}}" class="map-bg" src="{{mapBg}}" mode="aspectFill" />
+    <view class="city-lines"></view>
     <view class="map-title"><text class="small">CROSSING CITY</text><text class="main">交界都市</text></view>
     <view class="map-canvas">
-      <button wx:for="{{locations}}" wx:key="id" class="hotspot {{item.available ? 'available' : ''}}" disabled="{{!item.available}}" data-action="open" data-value="{{item.eventId}}" bindtap="act">
-        <text class="name">{{item.name}}</text><text class="desc">{{item.available ? item.eventTitle : item.desc}}</text>
+      <button wx:for="{{locations}}" wx:key="id" style="left:{{item.x}}%;top:{{item.y}}%;" class="hotspot {{item.available ? 'available' : ''}}" disabled="{{!item.available}}" data-action="open" data-value="{{item.eventId}}" bindtap="act">
+        <view class="pin"></view><text class="name">{{item.name}}</text><text class="desc">{{item.desc}}</text><text class="event">{{item.available ? '事件：' + item.eventTitle : '暂无事件'}}</text>
       </button>
     </view>
   </view>
   <view wx:else class="scene-view">
     <image wx:if="{{bg}}" class="scene-bg" src="{{bg}}" mode="aspectFill" />
     <text class="stage-label">{{label}}</text>
-    <view class="portrait-row">
+    <view wx:if="{{!black}}" class="portrait-row">
       <block wx:for="{{portraits}}" wx:key="side">
         <image wx:if="{{item.src}}" class="portrait {{item.side}} {{item.inactive ? 'inactive' : ''}}" src="{{item.src}}" mode="aspectFit" />
         <view wx:else class="portrait placeholder {{item.side}} {{item.inactive ? 'inactive' : ''}}">{{item.name}}</view>

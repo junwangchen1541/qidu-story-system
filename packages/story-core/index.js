@@ -255,6 +255,23 @@
       });
     });
     if (new Set(ids).size !== ids.length) errors.push("duplicate-id");
+    if (route.meta.timeline !== undefined) {
+      const timeline = route.meta.timeline;
+      if (!Array.isArray(timeline) || !timeline.length || new Set(timeline).size !== timeline.length ||
+          timeline.some(id => !route.events.some(event => event.id === id))) errors.push("invalid timeline");
+      else timeline.forEach((id, index) => {
+        const event = findEvent(route, id);
+        if (event.nextEventId !== timeline[index + 1]) errors.push("timeline link:" + id);
+        if (typeof event.autoAdvance !== "boolean") errors.push("timeline autoplay:" + id);
+        if (event.autoAdvance && event.choices.length !== 1) errors.push("automatic scene must have one exit:" + id);
+        for (const line of event.lines) {
+          if (line.video) {
+            if (!string(line.video.id) || !Number.isFinite(line.video.start) || line.video.start < 0 ||
+                !Number.isFinite(line.video.end) || line.video.end <= line.video.start) errors.push("invalid clip:" + id);
+          } else if (!Number.isFinite(line.durationMs) || line.durationMs <= 0) errors.push("invalid duration:" + id);
+        }
+      });
+    }
     (route.events || []).forEach((event) => {
       if (!route.locations.some((loc) => loc.id === event.location)) errors.push("unknown location:" + event.id);
       conditions(event.conditions);

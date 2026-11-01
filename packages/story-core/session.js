@@ -13,7 +13,12 @@
     let notice = "";
     try { story = core.hydrateState(route, storage && storage.load(key)); }
     catch (_) { story = core.createState(route); notice = "存档版本不兼容或已损坏，已从开场重新开始。"; }
-    let mode = core.resolveEnding(route, story) ? "ending" : story.eventId ? "scene" : "map";
+    const timeline = route.meta.timeline || null;
+    let mode = core.resolveEnding(route, story) ? "ending" : story.eventId || timeline ? "scene" : "map";
+    if (timeline && !story.eventId && mode === "scene") {
+      const first = timeline[0];
+      if (first) core.startEvent(route, story, first);
+    }
     let drawer = false;
     function persist() {
       try { if (storage) storage.save(key, core.serializeState(story)); }
@@ -28,7 +33,9 @@
       const atEnd = event && story.lineIndex === event.lines.length - 1;
       return {
         mode, drawer, notice,
+        cinematic: !!timeline,
         title: route.meta.title || "剧情系统",
+        mapBg: (assets.bg || {}).central_court || "",
         locations: route.locations.map((location) => {
           const events = core.availableEvents(route, story, location.id);
           return Object.assign({}, location, { available: !!events.length, eventId: events.length ? events[0].id : "", eventTitle: events.length ? events[0].title : "" });
@@ -44,7 +51,9 @@
         portraits: ["left", "center", "right"].map((side) => ({ side, name: cast[side] || "", src: (assets.portrait || {})[cast[side]] || "", inactive: !!speaker && speaker !== "指挥使" && speaker !== cast[side] })).filter((p) => p.name),
         bg: (assets.bg || {})[ending ? ending.bg : event ? event.bg : ""] || "",
         hasNext: !!event && !atEnd,
-        choices: atEnd ? event.choices.map((choice, index) => ({ text: choice.text, index })) : [],
+        autoAdvance: !!(timeline && event && event.autoAdvance),
+        sourceTime: timeline && event ? event.sourceTime || null : null,
+        choices: atEnd && !event.autoAdvance ? event.choices.map((choice, index) => ({ text: choice.text, index })) : [],
         ending: ending || null,
         coreCount: story.vars.black_cores === undefined ? null : story.vars.black_cores,
         maxCores: route.meta.maxBlackCores || null,
@@ -55,16 +64,36 @@
     function act(action, value) {
       switch (action) {
         case "open": core.startEvent(route, story, value); mode = "scene"; drawer = false; break;
-        case "next": if (mode === "scene") core.advanceLine(route, story); break;
+        case "next":
+        case "advance":
+          if (mode === "scene") {
+            const event = core.currentEvent(route, story);
+            if (event && core.currentLine(route, story) && story.lineIndex < event.lines.length - 1) core.advanceLine(route, story);
+            else if (event && event.autoAdvance) {
+              core.choose(route, story, 0);
+              const nextId = event.nextEventId;
+              if (nextId) core.startEvent(route, story, nextId);
+              else mode = core.resolveEnding(route, story) ? "ending" : "map";
+            }
+          }
+          break;
         case "choose":
           if (mode !== "scene") throw new Error("not in scene");
-          core.choose(route, story, Number(value));
-          mode = core.resolveEnding(route, story) ? "ending" : "map";
+          {
+            const event = core.currentEvent(route, story);
+            core.choose(route, story, Number(value));
+            const nextId = event && event.nextEventId;
+            if (timeline && nextId) core.startEvent(route, story, nextId);
+            else mode = core.resolveEnding(route, story) ? "ending" : "map";
+          }
           break;
         case "read": core.readMessage(route, story, value); break;
-        case "map": mode = core.resolveEnding(route, story) ? "ending" : "map"; drawer = false; break;
-        case "terminal": drawer = !drawer; break;
-        case "reset": story = core.createState(route); mode = "map"; drawer = false; notice = ""; break;
+        case "map": if (!timeline) mode = core.resolveEnding(route, story) ? "ending" : "map"; drawer = false; break;
+        case "terminal": if (!timeline) drawer = !drawer; break;
+        case "reset":
+          story = core.createState(route); mode = timeline ? "scene" : "map"; drawer = false; notice = "";
+          if (timeline) core.startEvent(route, story, timeline[0]);
+          break;
         default: throw new Error("unknown action: " + action);
       }
       persist();

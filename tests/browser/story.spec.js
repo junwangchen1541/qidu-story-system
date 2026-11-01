@@ -18,7 +18,7 @@ test('public route: dialogue, message, ending, reload and restart', async ({ pag
   await expect(page.locator('[data-action="open"]:enabled')).toHaveCount(0);
   await page.locator('#terminalBtn').click();
   await page.locator('[data-action="read"]').click();
-  await expect(page.locator('.message strong')).toContainText('已读');
+  await expect(page.locator('.memory-card strong')).toContainText('已读');
   await page.locator('#terminalBtn').click();
   await page.locator('[data-value="school"]').click();
   await page.locator('[data-action="next"]').click();
