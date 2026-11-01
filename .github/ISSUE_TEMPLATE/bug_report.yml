@@ -4,7 +4,7 @@ labels: [bug]
 body:
   - type: markdown
     attributes:
-      value: Do not include original game content, private account information, or local media.
+      value: Identify the affected screen or event, platform, version, and expected behavior. Content reports should include the route and event IDs.
   - type: input
     id: version
     attributes:

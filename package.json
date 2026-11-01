@@ -2,7 +2,7 @@
   "name": "qidu-story-system",
   "private": true,
   "version": "0.3.0",
-  "description": "Cross-platform research prototype for event-driven interactive narratives",
+  "description": "Cross-platform narrative game for web and WeChat Mini Program",
   "scripts": {
     "build": "node tools/build.js",
     "build:private": "node tools/build-private.js",

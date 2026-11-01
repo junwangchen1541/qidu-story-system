@@ -13,7 +13,7 @@
       "from": "终端",
       "unlock": [{ "type": "flag_set", "flag": "court_done" }],
       "readFlag": "mail_1_read",
-      "text": "这里展示私信如何触发后续事件。公开版不包含原作文本。",
+      "text": "这里展示私信如何触发后续事件。",
       "effects": [{ "type": "set_flag", "flag": "mail_opened" }]
     }
   ],
@@ -26,7 +26,7 @@
       "conditions": [{ "type": "flag_not_set", "flag": "court_done" }],
       "cast": { "left": "引导者" },
       "lines": [
-        { "text": "黑屏白字演出示例。\n\n公开版只展示系统结构，不包含原作剧情。", "screen": "black_title" },
+        { "text": "黑屏白字演出。\n\n从这里开始，选择一处地点继续调查。", "screen": "black_title" },
         { "speaker": "引导者", "text": "欢迎来到这座城市。接下来，你将通过地点选择推进事件。" },
         { "text": "旁白、角色对白、震动、白屏和分支都由同一套数据结构驱动。" }
       ],
