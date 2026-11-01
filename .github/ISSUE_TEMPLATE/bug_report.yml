@@ -1,0 +1,32 @@
+name: Bug report
+description: Report a reproducible problem in the public demo or shared code.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Do not include original game content, private account information, or local media.
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      placeholder: v0.3.0
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Browser, device, or WeChat DevTools version
+    validations:
+      required: true

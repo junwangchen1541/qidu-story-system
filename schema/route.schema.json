@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.invalid/qidu-story-system/route.schema.json",
+  "$id": "https://github.com/junwangchen1541/qidu-narrative-system/blob/main/schema/route.schema.json",
   "title": "剧情路线数据",
   "type": "object",
   "required": ["meta", "initial", "locations", "events", "messages", "endings"],

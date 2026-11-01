@@ -1,8 +1,8 @@
 {
-  "name": "qidu-story-system",
+  "name": "qidu-narrative-system",
   "private": true,
-  "version": "0.2.0",
-  "description": "跨网页与微信小程序的剧情系统研究项目",
+  "version": "0.3.0",
+  "description": "Cross-platform research prototype for event-driven interactive narratives",
   "scripts": {
     "build": "node tools/build.js",
     "build:private": "node tools/build-private.js",

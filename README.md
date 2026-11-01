@@ -1,67 +1,77 @@
-# 七都式剧情系统复现计划
+# Qidu Narrative System · 七都叙事系统
 
-这是一个同人、非商业性质的《永远的7日之都》剧情系统研究与复现项目。项目目标是研究并复现其“有限地点内通过事件选择推进叙事”的交互范式：地图选择、视觉小说式对白、私信触发、黑屏白字、白屏、震动、分支与结局。
+研究《永远的7日之都》叙事交互方式的跨平台项目，围绕地图事件、对白、选项、私信、存档和结局，维护网页与微信小程序共用的剧情模型。
 
-## 当前公开范围
+[![CI](https://github.com/junwangchen1541/qidu-narrative-system/actions/workflows/ci.yml/badge.svg)](https://github.com/junwangchen1541/qidu-narrative-system/actions/workflows/ci.yml) [![Release](https://img.shields.io/github/v/release/junwangchen1541/qidu-narrative-system)](https://github.com/junwangchen1541/qidu-narrative-system/releases)
 
-本仓库只公开可协作的工程部分：
+> 怎么样都好，但结局不应该是这样。
 
-- 剧情系统前端 demo，占位素材版。
-- 剧情节点、地点、私信、演出效果的数据结构。
-- 资源清单模板。
-- 文本整理、资源管理、贡献边界文档。
+本项目是非商业同人研究项目，与原权利方无关联。公开演示使用占位文本和图形，原作资源与完整剧情保留在本地私有素材库。
 
-## 在线体验
+## 当前状态
 
-公开仓库中的 `apps/web/` 使用占位文本与 CSS 背景，只用于展示系统交互方式。`demo_public/` 保留为兼容入口，会跳转到网页端。私人完整资料库和原作资源不会进入公开仓库。
+当前版本 **0.3.0**，处于 1.0 之前的研究原型阶段。已实现共用状态机、网页与微信小程序渲染层，以及网页自动演出能力。数据格式和表现仍会迭代；微信实机验证尚未完成。
 
-## 版权声明
+版本内容见 [Releases](https://github.com/junwangchen1541/qidu-narrative-system/releases)、[变更日志](CHANGELOG.md)和 [0.3.0 发布说明](docs/releases/v0.3.0.md)。
 
-《永远的7日之都》及其文字、美术、音乐、角色、世界观等原作内容版权归原权利方所有。本项目不主张拥有原作素材版权，不用于商业用途，不提供原作资源下载。
+## 功能
 
-如果权利方认为本项目中的任何内容不适合公开展示，请通过 issue 联系维护者，我们会优先移除或调整。
+- 共享 JavaScript 状态机：事件条件、变量效果、选项、私信、结局与存档。
+- 地图地点选择、背景和角色展示、对白框、黑屏文字、闪白和震动。
+- 网页自动演出：定时推进、选项等待、暂停恢复、视频片段衔接。
+- JSON schema、路线校验、单元测试、桌面和移动尺寸浏览器测试。
+- 本地私有构建工具，生成内容由 Git 忽略。
 
-更详细的边界见：[docs/版权与公开边界.md](docs/版权与公开边界.md)。
+## 快速开始
 
-## 开发方式
+需要 **Node.js 20+** 和 npm。先获取源码并构建公开占位内容：
 
-网页端建议在仓库根目录启动静态服务器：
+```bash
+npm ci
+npm run build
+```
+
+可直接打开 `apps/web/index.html`。也可用 Python 3 从仓库根目录启动静态服务器，再访问 `http://localhost:8080/apps/web/`：
 
 ```bash
 python -m http.server 8080
 ```
 
-然后打开：
+微信开发者工具导入 `apps/wechat/`。账号相关配置使用本地私有副本，具体步骤见 [微信本地演示](docs/微信本地演示.md)。
+
+## 开发检查
 
 ```bash
-http://localhost:8080/apps/web/
-```
-
-微信小程序端使用微信开发者工具导入 `apps/wechat/`。小程序端和网页端读取同一份 `data/routes/public-demo.json`，共享 `packages/story-core` 的状态机。
-
-运行共享核心校验：
-
-```bash
+npm test
 npm run validate
-npm run sync:wechat
+npx playwright install chromium
+npm run test:web
 ```
+
+Windows 本地测试默认使用已安装的 Chrome；CI 使用 Playwright Chromium。私有素材测试只在显式设置对应环境变量后运行，公开 CI 不依赖本地素材库。
 
 ## 仓库结构
 
 ```text
-apps/web/            # 网页端渲染器
-apps/wechat/         # 微信小程序端
-packages/story-core/ # 跨平台剧情状态机
-data/routes/         # 公开占位路线数据
-demo_public/         # 兼容跳转入口
-docs/                # 版权边界、贡献规范、整理方法
-schema/              # 剧情数据结构
-tools/               # 校验和同步脚本
-manifest/            # 资源清单模板，不含资源本体
+apps/web/              网页渲染器
+apps/wechat/           微信小程序渲染器
+packages/story-core/   两端共用剧情状态机
+数据入口 data/routes/  公开占位路线
+schema/                剧情 JSON schema
+测试目录 tests/        单元与浏览器测试
+工具目录 tools/        构建、同步与校验
+文档目录 docs/         贡献、资源与版权说明
+manifest/              资源清单模板
 ```
 
-## 贡献原则
+## 版本与维护
 
-- 可以贡献系统代码、交互设计、演出实现、结构化整理方法。
-- 可以贡献资源索引、来源说明、hash、缺口标记。
-- 不要提交原作 CG、立绘、音乐、视频、APK 或完整剧情文本。
+采用 `0.MINOR.PATCH` 版本和 `vMAJOR.MINOR.PATCH` Git 标签。新增功能提升次版本，修复提升补丁版本；1.0 之前允许格式调整，须在变更日志中说明。存档版本、路线 revision 与软件版本分别维护，发布时检查兼容性。
+
+每个 Release 对应确定的提交和标签，发布前通过 CI，说明功能、验证范围与已知限制。问题通过 Issues 跟踪，变更通过聚焦的提交或 PR 维护。流程见 [贡献指南](CONTRIBUTING.md)。
+
+## 公开边界与许可
+
+原作文字、美术、音乐、角色及世界观版权归各权利方所有。本仓库 MIT 许可仅覆盖原创代码和文档，不授予原作资源使用权。
+
+请勿上传原作素材、完整剧情、OCR 长文本、APK、账号凭据或部署信息。完整私有构建不进入 GitHub Release。详见 [版权与公开边界](docs/版权与公开边界.md)和 [LICENSE](LICENSE)。
