@@ -48,6 +48,27 @@ test('corrupt saves recover and storage failures do not stop play', () => {
   const s = createSession(route, { load: () => ({ version: 99 }), save: () => { throw Error('quota'); } });
   assert.ok(s.view().notice); s.act('open', 'start'); assert.ok(s.view().notice.includes('未能写入'));
 });
+test('declared save revisions migrate while undeclared revisions still fail', () => {
+  const snapshot = core.serializeState(core.createState(route));
+  snapshot.revision = 'previous';
+  assert.throws(() => core.hydrateState(route, snapshot), /version or route mismatch/);
+  const migratedRoute = structuredClone(route);
+  migratedRoute.meta.compatibleSaveRevisions = ['previous'];
+  const migrated = core.hydrateState(migratedRoute, snapshot);
+  assert.equal(migrated.revision, migratedRoute.meta.revision);
+  migratedRoute.meta.continuedEndings = { public_demo_end: 'start' };
+  const endingSave = { ...core.serializeState(core.createState(route)), revision: 'previous', endingId: 'public_demo_end' };
+  const continued = core.hydrateState(migratedRoute, endingSave);
+  assert.equal(continued.eventId, 'start');
+  assert.equal(continued.endingId, null);
+  const midRoute = structuredClone(migratedRoute);
+  midRoute.events.unshift({ id: 'second', title: 'Second', location: 'court', conditions: [], lines: [{ text: 'second line' }], choices: [{ text: 'Continue', effects: [] }] });
+  midRoute.events[1].conditions = [];
+  const midSave = { ...core.serializeState(core.createState(route)), revision: 'previous', eventId: 'start', lineIndex: 0 };
+  const resumed = core.hydrateState(midRoute, midSave);
+  assert.equal(resumed.eventId, 'start');
+  assert.equal(resumed.lineIndex, 0);
+});
 test('generated WeChat core and route match the single source', () => {
   for (const file of ['index.js', 'session.js']) assert.equal(fs.readFileSync('apps/wechat/shared/' + file, 'utf8'), fs.readFileSync('packages/story-core/' + file, 'utf8'));
   assert.deepEqual(require('../apps/wechat/data/content').route, route);

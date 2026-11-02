@@ -29,12 +29,22 @@
   function hydrateState(route, snapshot) {
     const state = createState(route);
     if (!snapshot) return state;
-    if (snapshot.version !== 1 || snapshot.routeId !== route.meta.id || snapshot.revision !== route.meta.revision) {
+    const compatibleRevisions = route.meta.compatibleSaveRevisions || [];
+    if (snapshot.version !== 1 || snapshot.routeId !== route.meta.id ||
+        (snapshot.revision !== route.meta.revision && !compatibleRevisions.includes(snapshot.revision))) {
       throw new Error("save version or route mismatch");
     }
     if (!Array.isArray(snapshot.flags) || !snapshot.flags.every((flag) => typeof flag === "string") ||
         !snapshot.vars || typeof snapshot.vars !== "object" || Array.isArray(snapshot.vars) ||
         !Number.isInteger(snapshot.lineIndex) || snapshot.lineIndex < 0) throw new Error("invalid save");
+    // Only an explicitly compatible older route may resume beyond a former ending.
+    if (snapshot.revision !== route.meta.revision && snapshot.endingId) {
+      const resumeId = (route.meta.continuedEndings || {})[snapshot.endingId];
+      if (resumeId) {
+        if (snapshot.eventId) throw new Error("invalid completed save");
+        snapshot = Object.assign({}, snapshot, { endingId: null, eventId: resumeId, lineIndex: 0 });
+      }
+    }
     const event = snapshot.eventId && findEvent(route, snapshot.eventId);
     if (snapshot.eventId && (!event || snapshot.lineIndex >= event.lines.length)) throw new Error("invalid saved event");
     if (snapshot.endingId && !findEnding(route, snapshot.endingId)) throw new Error("invalid saved ending");
@@ -215,6 +225,8 @@
     if (!route || typeof route !== "object") return { ok: false, errors: ["invalid route"] };
     const string = (v) => typeof v === "string" && v.length > 0;
     if (!route.meta || !string(route.meta.id) || !string(route.meta.revision)) errors.push("invalid meta");
+    if (route.meta && route.meta.compatibleSaveRevisions !== undefined &&
+        (!Array.isArray(route.meta.compatibleSaveRevisions) || !route.meta.compatibleSaveRevisions.every(string))) errors.push("invalid compatible save revisions");
     if (!route.initial || !Array.isArray(route.initial.flags) || !route.initial.flags.every(string) ||
         !route.initial.vars || typeof route.initial.vars !== "object" || Array.isArray(route.initial.vars)) errors.push("invalid initial");
     for (const key of ["locations", "events", "messages", "endings"]) {
