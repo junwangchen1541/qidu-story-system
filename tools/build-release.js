@@ -14,7 +14,8 @@ function git(args) {
 }
 
 function assertReleaseSource() {
-  const changes = git(["status", "--porcelain"]).split(/\r?\n/).filter(Boolean);
+  const status = execFileSync("git", ["status", "--porcelain", "-z", "--untracked-files=all"], { cwd: root, encoding: "utf8" });
+  const changes = status.split("\0").filter(Boolean);
   const unexpected = changes.filter(line => line.slice(3).replaceAll("\\", "/") !== localOnly);
   if (unexpected.length) throw new Error("Release source must be committed first:\n" + unexpected.join("\n"));
 }
