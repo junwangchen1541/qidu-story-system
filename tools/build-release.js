@@ -80,7 +80,7 @@ function buildRelease() {
         bytes: fs.statSync(file.absolute).size,
         sha256: sha256(file.absolute)
       }));
-      return { platform, files };
+      return { platform, artifactType: platform === "web" ? "static-site" : "wechat-source-project", files };
     });
     const manifest = {
       project: pkg.name,
@@ -93,7 +93,8 @@ function buildRelease() {
     fs.writeFileSync(path.join(stage, "release-manifest.json"), JSON.stringify(manifest, null, 2) + "\n", "utf8");
     const checksums = [];
     for (const platform of ["web", "wechat"]) {
-      const archive = path.join(stage, `${platform}-v${pkg.version}.zip`);
+      const archiveName = platform === "wechat" ? `wechat-source-v${pkg.version}.zip` : `web-v${pkg.version}.zip`;
+      const archive = path.join(stage, archiveName);
       fs.writeFileSync(archive, zipDirectory(path.join(stage, platform), epochSeconds));
       checksums.push(`${sha256(archive)}  ${path.basename(archive)}`);
     }

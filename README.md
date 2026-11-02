@@ -18,7 +18,7 @@
 npm run build:release
 ```
 
-Web 与微信小程序 ZIP、逐文件 SHA-256 和构建元数据保存在 `dist/releases/`。
+Web 静态站点 ZIP、微信开发者工具源码归档、逐文件 SHA-256 和构建元数据保存在 `dist/releases/`。微信源码归档用于导入开发者工具，不会自动上传到微信平台。
 
 ## 游戏系统
 
