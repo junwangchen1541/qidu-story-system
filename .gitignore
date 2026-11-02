@@ -18,6 +18,7 @@ apk/
 # private builds
 build_private/
 dist_private/
+dist/
 
 # secrets and deployment
 .env

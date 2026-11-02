@@ -12,6 +12,14 @@
 
 版本内容见 [Releases](https://github.com/junwangchen1541/qidu-story-system/releases)、[变更日志](CHANGELOG.md)和 [0.3.0 发布说明](docs/releases/v0.3.0.md)。
 
+从已提交源码构建按平台归档的公开发行包：
+
+```bash
+npm run build:release
+```
+
+Web 与微信小程序 ZIP、逐文件 SHA-256 和构建元数据保存在 `dist/releases/`。
+
 ## 游戏系统
 
 - 共享 JavaScript 状态机：事件条件、变量效果、选项、私信、结局与存档。
